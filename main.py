@@ -1,7 +1,7 @@
 import keras
 import dataset_funcs as ds_aux
 import LSTM_rnn as RNN
-
+import numpy as np
 
 
 
@@ -26,5 +26,18 @@ print("Accuracy:  ", accuracy)
 
 
 
+#yhat_probs = model.predict(X_test, verbose=0)
+# predict crisp classes for test set
+yhat_classes = model.predict_classes(X_test, verbose=1)
+y_true = []
+for l in y_test:
+    y_true.append(np.argmax(l))
+acc = 0
+for i in range(0, len(y_true)):
+    print(y_true[i],yhat_classes[i])
+    if y_true[i] == yhat_classes[i]:
+        acc = acc + 1
 
+res = float(acc/len(y_true))
+print("L'accuracy è : ", res)
 

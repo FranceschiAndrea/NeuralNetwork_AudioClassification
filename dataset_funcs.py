@@ -10,31 +10,31 @@ import keras
 def load_test_features(saved_files_path, testing_path):
     if not os.path.isfile(saved_files_path + 'feat_test.npy'):
         X_test = aux.get_test_features(testing_path)
+        np.save(saved_files_path + 'feat_test.npy', X_test)
         X_test = np.expand_dims(X_test, axis=2)
     else:
         X_test = np.load(saved_files_path + 'feat_test.npy')
         X_test = np.expand_dims(X_test, axis=2)
-        np.save(saved_files_path + 'feat_test.npy', X_test)
     return X_test
 
 def load_test_true_labels(saved_files_path, testing_path):
     if not os.path.isfile(saved_files_path + 'label_test.npy'):
         y_test = aux.fill_y_true(testing_path)
+        np.save(saved_files_path + 'label_test.npy', y_test)
         y_test = keras.utils.to_categorical(y_test - 1, num_classes=5)
     else:
         y_test = np.load(saved_files_path + 'label_test.npy')
         y_test = keras.utils.to_categorical(y_test - 1, num_classes=5)
-        np.save(saved_files_path + 'label_test.npy', y_test)
     return y_test
 
 def load_train_feat_and_labels(saved_files_path, training_path):
     if not os.path.isfile(saved_files_path + "feat_train.npy") and not os.path.isfile(saved_files_path + "label_train.npy"):
         features, labels = aux.parse_audio_files(training_path) 
+        np.save(saved_files_path + 'feat_train.npy', features) 
+        np.save(saved_files_path + 'label_train.npy', labels)
         X_train = np.expand_dims(features, axis=2)    
         y_train = labels.ravel()
         y_train = keras.utils.to_categorical(y_train - 1, num_classes=5)
-        np.save(saved_files_path + 'feat_train.npy', features) 
-        np.save(saved_files_path + 'label_train.npy', labels)
     elif not os.path.isfile(saved_files_path + "feat_train.npy"):
         print("Error in getting features saved file, aborting")
         sys.exit(0)
@@ -60,6 +60,11 @@ def load_data():
     new_parent_path = "New_5Classes"
     seg_ms = 20000
     new_dir = new_parent_path + "_" + str(seg_ms)
+    if not os.path.isdir(saved_files_path + new_dir):
+        saved_files_path = saved_files_path + new_dir + "/"
+        os.mkdir(saved_files_path)
+    else:
+        saved_files_path = saved_files_path + new_dir + "/"
     training_path = new_dir + "/Training"
     testing_path = new_dir + "/Testing"
     if not os.path.isdir(new_dir):

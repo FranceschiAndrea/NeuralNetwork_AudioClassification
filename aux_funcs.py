@@ -9,15 +9,20 @@ def feature_extraction(file_name):
 		audio = audio[:,0]
 	audio = audio.T
     
-    # Get feature   
+    # Get features   
+	stft = np.abs(librosa.stft(audio))
 	mfccs = np.mean(librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40).T, axis=0) #40 values
+	chroma = np.mean(librosa.feature.chroma_stft(S=stft, sr=sample_rate).T, axis=0)
+	mel = np.mean(librosa.feature.melspectrogram(audio, sr=sample_rate).T, axis=0)
+	contrast = np.mean(librosa.feature.spectral_contrast(S=stft, sr=sample_rate).T, axis=0)
+	tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(audio), sr=sample_rate).T, axis=0) #tonal centroid features
     
-    #Return computed feature
-	return mfccs
+    ##Return computed features
+	return mfccs, chroma, mel, contrast, tonnetz
     
 # Process audio files: Return arrays with features and labels
 def parse_audio_files(train_path): 
-	features, labels = np.empty((0,40)), np.empty(0) #40 features total for each file
+	features, labels = np.empty((0,193)), np.empty(0) #193 features total for each file
 	classes = {}
 	i = 0
 	for d in os.listdir(train_path):        #create a dict with key the dir. name, value an integer label index
@@ -29,11 +34,11 @@ def parse_audio_files(train_path):
 		print(d, classes[d])
 		for file_name in os.listdir(train_path + "/" + d + "/"): 
 			try:
-				mfccs = feature_extraction(train_path + "/" + d + "/" + file_name)          #extract feature for each file
+				mfccs, chroma, mel, contrast, tonnetz = feature_extraction(train_path + "/" + d + "/" + file_name)          #extract feature for each file
 			except Exception as e:
 				print("[Error] there was an error in feature extraction. %s" % (e))
 				continue
-			extracted_features = np.hstack([mfccs])                 # stack arrays in sequence horizontally (column wise)
+			extracted_features = np.hstack([mfccs,chroma, mel, contrast, tonnetz])                 # stack arrays in sequence horizontally (column wise)
 			features = np.vstack([features, extracted_features])    # stack arrays in sequence vertically (row wise).
 			labels = np.append(labels, label)
 			i = i + 1
@@ -44,15 +49,20 @@ def parse_audio_files(train_path):
 
 
 def get_test_features(testing_path):
-	features = np.empty((0,40))
+	features = np.empty((0,193))
 	for p in os.listdir(testing_path):
 		if os.path.isdir(testing_path + '/' + p):
 			for a in os.listdir(testing_path + '/' + p):
 				audio, sample_rate = librosa.load(testing_path + '/' + p + '/' + a)
-				mfccs = np.mean(librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40).T, axis=0)
-				extracted_features = np.hstack([mfccs]) 
+				stft = np.abs(librosa.stft(audio))
+				mfccs = np.mean(librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40).T, axis=0) #40 values
+				chroma = np.mean(librosa.feature.chroma_stft(S=stft, sr=sample_rate).T, axis=0)
+				mel = np.mean(librosa.feature.melspectrogram(audio, sr=sample_rate).T, axis=0)
+				contrast = np.mean(librosa.feature.spectral_contrast(S=stft, sr=sample_rate).T, axis=0)
+				tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(audio), sr=sample_rate).T, axis=0) #tonal centroid features
+				extracted_features = np.hstack([mfccs,chroma, mel, contrast, tonnetz]) 
 				features = np.vstack([features, extracted_features]) 
-				features = np.array(features)
+	features = np.array(features)
 	return features
 
 
@@ -67,5 +77,4 @@ def fill_y_true(testing_path):
 			for a in os.listdir(testing_path + '/' + p):
 				y_true.append(i)
 		i = i + 1
-	y_true = np.array(y_true, dtype = np.int)
 	return y_true
