@@ -77,4 +77,5 @@ def fill_y_true(testing_path):
 			for a in os.listdir(testing_path + '/' + p):
 				y_true.append(i)
 		i = i + 1
+	y_true = np.array(y_true)
 	return y_true

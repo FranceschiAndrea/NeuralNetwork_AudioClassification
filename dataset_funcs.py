@@ -53,12 +53,12 @@ def load_train_feat_and_labels(saved_files_path, training_path):
     return X_train, y_train
 
 def load_data():
-    parent_path = "5Classes"
+    parent_path = "5Classes/"
     saved_files_path = "saved_files/"
     if not os.path.isdir(saved_files_path):
         os.mkdir(saved_files_path)
     new_parent_path = "New_5Classes"
-    seg_ms = 20000
+    seg_ms = 1000
     new_dir = new_parent_path + "_" + str(seg_ms)
     if not os.path.isdir(saved_files_path + new_dir):
         saved_files_path = saved_files_path + new_dir + "/"
@@ -71,7 +71,7 @@ def load_data():
         os.mkdir(new_dir)
         os.mkdir(training_path)
         os.mkdir(testing_path)
-        audio_aux.partitionate_audio(parent_path, new_parent_path, seg_ms, training_path, testing_path)
+        audio_aux.partitionate_audio(parent_path, seg_ms, training_path, testing_path)
     ##Get labels and features
     
     X_train, y_train = load_train_feat_and_labels(saved_files_path, training_path)

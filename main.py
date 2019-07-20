@@ -14,7 +14,7 @@ X_train, X_test, y_train, y_test = ds_aux.load_data()
 model = RNN.lstm_RNN(X_train, y_train)
 
 print("Training ...")
-model.fit(X_train, y_train, batch_size = 512, epochs=50)
+model.fit(X_train, y_train, batch_size = 512, epochs=100)
 train_acc = model.evaluate(X_train, y_train, verbose=1)
 print("loss, accuracy",train_acc)
 
