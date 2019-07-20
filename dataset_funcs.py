@@ -58,7 +58,7 @@ def load_data():
     if not os.path.isdir(saved_files_path):
         os.mkdir(saved_files_path)
     new_parent_path = "New_5Classes"
-    seg_ms = 1000
+    seg_ms = 50
     new_dir = new_parent_path + "_" + str(seg_ms)
     if not os.path.isdir(saved_files_path + new_dir):
         saved_files_path = saved_files_path + new_dir + "/"

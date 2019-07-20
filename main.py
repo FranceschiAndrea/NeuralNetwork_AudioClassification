@@ -1,26 +1,44 @@
 import keras
+from keras.models import load_model
 import dataset_funcs as ds_aux
 import LSTM_rnn as RNN
 import numpy as np
+import os
 
 
 
 
+saved_files_path = "saved_files/"
+parent_path = "5Classes/"
+new_parent_path = "New_5Classes"
+seg_ms = 50
+new_dir = new_parent_path + "_" + str(seg_ms)
+saved_files_path = saved_files_path + new_dir + "/"
 
-
+epochs = 100
 
 X_train, X_test, y_train, y_test = ds_aux.load_data()
 
-model = RNN.lstm_RNN(X_train, y_train)
-
 print("Training ...")
-model.fit(X_train, y_train, batch_size = 512, epochs=100)
+if not os.path.isfile(saved_files_path + "model_" + str(epochs)):
+	model = RNN.lstm_RNN(X_train, y_train)
+	try:
+		model.fit(X_train, y_train, batch_size = 1024, epochs=epochs)
+	except KeyboardInterrupt:
+		pass
+	model.save(saved_files_path + "model_" + str(epochs))
+else:
+	model = load_model(saved_files_path + "model_" + str(epochs))
+
+
+
+
 train_acc = model.evaluate(X_train, y_train, verbose=1)
 print("loss, accuracy",train_acc)
 
 
 print("\nValidating ...")
-score, accuracy = model.evaluate(X_test, y_test, batch_size=256, verbose=1)
+score, accuracy = model.evaluate(X_test, y_test, batch_size=1024, verbose=1)
 print("Loss:  ", score)
 print("Accuracy:  ", accuracy)
 
