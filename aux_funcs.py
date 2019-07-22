@@ -4,7 +4,7 @@ import numpy as np
 import keras
 
 def feature_extraction(file_name):
-	audio, sample_rate = librosa.load(file_name, duration = 0.05)    #load the audio file in wav format
+	audio, sample_rate = librosa.load(file_name)    #load the audio file in wav format
 	if audio.ndim > 1:
 		audio = audio[:,0]
 	audio = audio.T

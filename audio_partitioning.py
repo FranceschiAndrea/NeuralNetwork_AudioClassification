@@ -17,7 +17,6 @@ def partitionate_audio(directory, seg_ms, training_path, testing_path):
 		path_directories = directory+d
 		for f in os.listdir(path_directories):
 			path_wav_file = path_directories+"/"+f
-			#j = 0
 			print("Loading...: "+path_wav_file)
 			audio, sr = librosa.load(path_wav_file, sr=simple_rate)
 			partitioned_audio = librosa.util.frame(audio, frame_length=frame_size, hop_length=hop)			
@@ -45,5 +44,4 @@ def partitionate_audio(directory, seg_ms, training_path, testing_path):
 					os.mkdir(path_new_folder)
 					os.chmod(path_new_folder, 0o777)
 				librosa.output.write_wav(path_new_audio, frame, sr)	
-				#j = j + 1
 

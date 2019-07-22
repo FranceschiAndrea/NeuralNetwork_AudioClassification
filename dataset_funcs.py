@@ -52,13 +52,12 @@ def load_train_feat_and_labels(saved_files_path, training_path):
 
     return X_train, y_train
 
-def load_data():
-    parent_path = "5Classes/"
-    saved_files_path = "saved_files/"
+def load_data(parent_dir, saved_files_dir, seg_ms):
+    parent_path = parent_dir+"/"
+    saved_files_path = saved_files_dir+"/"
+    new_parent_path = "New_5Classes"
     if not os.path.isdir(saved_files_path):
         os.mkdir(saved_files_path)
-    new_parent_path = "New_5Classes"
-    seg_ms = 50
     new_dir = new_parent_path + "_" + str(seg_ms)
     if not os.path.isdir(saved_files_path + new_dir):
         saved_files_path = saved_files_path + new_dir + "/"
