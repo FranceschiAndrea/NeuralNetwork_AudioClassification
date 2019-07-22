@@ -11,13 +11,16 @@ import os
 saved_files_directory = "saved_files"
 original_audio_directory = "5Classes"
 audio_segmentation_in_ms = 50
-epochs_number = 5
-work_batch_size = 4096
+epochs_number = 50
+work_batch_size = 1024
+work_directory = "New_5Classes_" + str(audio_segmentation_in_ms) #Togliereil New successivamente +in: --ds_aux.load_data()	--
+work_saved_files_path = saved_files_directory + "/" + work_directory + "/"
+training_path = work_directory + "/Training"
+testing_path = work_directory + "/Testing"
 
 ############
 
-work_directory = "New_5Classes_" + str(audio_segmentation_in_ms) #Togliereil New successivamente +in: --ds_aux.load_data()	--
-work_saved_files_path = saved_files_directory + "/" + work_directory + "/"
+
 
 X_train, X_test, y_train, y_test = ds_aux.load_data(original_audio_directory, saved_files_directory, audio_segmentation_in_ms)
 
@@ -39,19 +42,6 @@ print("\n\n*****************************************Validating******************
 score, accuracy = model.evaluate(X_test, y_test, batch_size=work_batch_size, verbose=1)
 print("Automatic Generated Model Test Statistics: " + "loss:  " + str(score) + ", accuracy:  " + str(accuracy) + "\n")
 
-#yhat_probs = model.predict(X_test, verbose=0)
-# predict crisp classes for test set
-yhat_classes = model.predict_classes(X_test, verbose=1)
-y_true = []
-for l in y_test:
-    y_true.append(np.argmax(l))
-acc = 0
-for i in range(0, len(y_true)):
-    #print(y_true[i],yhat_classes[i])
-    if y_true[i] == yhat_classes[i]:
-        acc = acc + 1
 
-res = float(acc/len(y_true))
-
-print("Manually Calculated Model Test Statistics: accuracy: " + str(res) + "\n")
+aux.get_evaluation_metrics(model, X_test, y_test, testing_path)
 
