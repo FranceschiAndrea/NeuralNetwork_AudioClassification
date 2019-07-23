@@ -3,12 +3,6 @@ import librosa
 import numpy as np
 import keras
 
-from sklearn.metrics import classification_report, confusion_matrix
-import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
-import seaborn as sn
-import pandas as pd
-
 def feature_extraction(file_name):
 	audio, sample_rate = librosa.load(file_name)    #load the audio file in wav format
 	if audio.ndim > 1:
@@ -78,9 +72,7 @@ def get_test_features(testing_path):
 def fill_y_true(testing_path):
 	y_true = []
 	i = 0
-	classes=[]
 	for p in os.listdir(testing_path):
-		classes.append(p)
 		if os.path.isdir(testing_path + '/' + p):
 			for a in os.listdir(testing_path + '/' + p):
 				y_true.append(i)
@@ -89,87 +81,3 @@ def fill_y_true(testing_path):
 	return y_true
 
 
-def get_classes(testing_path):
-	classes={}
-	i = 0
-	for p in os.listdir(testing_path):
-		classes[p] = i
-		i = i + 1
-	return classes
-
-
-def get_evaluation_metrics(model, X_test, y_test, testing_path):
-	classes = get_classes(testing_path)
-	cnf_mat = {}												#confusion matrix
-	for c1 in list(classes.keys()):
-		for c2 in list(classes.keys()):
-			cnf_mat[(c1,c2)] = 0
-
-	inv_map = {v: k for k, v in classes.items()}
-
-	yhat_classes = model.predict_classes(X_test, verbose=1)
-	y_true = []
-	for l in y_test:
-	    y_true.append(np.argmax(l))
-	acc = 0
-	for i in range(0, len(y_true)):
-	    if y_true[i] == yhat_classes[i]:
-	        acc = acc + 1
-	    cnf_mat[inv_map[yhat_classes[i]], inv_map[y_true[i]]] += 1	
-
-	confusion_matrix_array = []
-	for c1 in list(classes.keys()):
-		l = []
-		for c2 in list(classes.keys()):
-			l.append(cnf_mat[c1,c2])
-		confusion_matrix_array.append(l)
-
-	print(classification_report(y_true, yhat_classes, list(set(y_true))))				#this report show the precision and the recal of each class
-
-
-
-		
-	df_cm = pd.DataFrame(confusion_matrix_array, index = list(classes.keys()), columns = list(classes.keys()))
-	plt.figure(figsize = (10,10))
-	plt.title("Confusion Matrix", fontsize=21)
-	sn.set(font_scale=1)																
-	sn.heatmap(df_cm, fmt = "d", annot=True,annot_kws={"size": 12})						
-	tick_marks = np.arange(len(list(classes.keys())))
-	plt.xticks(tick_marks, list(classes.keys()), fontsize=12, rotation = 45)
-	plt.yticks(tick_marks, list(classes.keys()), fontsize=12, rotation = 30)
-	plt.ylabel('True label', fontsize=18)
-	plt.xlabel('Predicted label', fontsize=18)
-	plt.tight_layout()
-	plt.show()
-
-	metrics = ["precision", "recall", "f1-score", "support"]
-	metrics_val = []
-	cl_rep = classification_report(y_true, yhat_classes, list(set(y_true)), output_dict = True)
-	for k in cl_rep:
-		print(k)
-		d = cl_rep[k]
-		l = []
-		if (k == "micro avg"):
-			break
-		for metric in d:
-			l.append(d[metric])
-		metrics_val.append(l)
-
-	df_cm = pd.DataFrame(metrics_val, index = list(classes.keys()), columns = metrics)
-	#print(df_cm)
-
-	plt.figure(figsize = (8,6))
-	plt.title("Metrics", fontsize=21)
-	sn.set(font_scale=1)																
-	sn.heatmap(df_cm, fmt = "f", annot=True,annot_kws={"size": 12}, cmap=ListedColormap(['black']), cbar=False)						
-	x_tick_marks = np.arange(len(metrics))
-	y_tick_marks = np.arange(len(list(classes.keys())))
-	plt.xticks(x_tick_marks, metrics, fontsize=10, rotation = 0)
-	plt.yticks(y_tick_marks, list(classes.keys()), fontsize=10)
-	plt.ylabel('Classes', fontsize=14)
-	plt.xlabel('Metrics', fontsize=14)
-	plt.tight_layout()
-	plt.show()
-
-	res = float(acc/len(y_true))
-	print("Manually Calculated Model Test Statistics: accuracy: " + str(res) + "\n")

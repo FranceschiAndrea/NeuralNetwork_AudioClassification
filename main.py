@@ -4,8 +4,8 @@ import dataset_funcs as ds_aux
 import LSTM_rnn as RNN
 import numpy as np
 import os
-
-
+import aux_funcs as aux
+import get_plots as plt
 #SET PARAMS:
 
 saved_files_directory = "saved_files"
@@ -18,17 +18,19 @@ work_saved_files_path = saved_files_directory + "/" + work_directory + "/"
 training_path = work_directory + "/Training"
 testing_path = work_directory + "/Testing"
 
+history = None
 ############
 
 
 
 X_train, X_test, y_train, y_test = ds_aux.load_data(original_audio_directory, saved_files_directory, audio_segmentation_in_ms)
 
+
 print("\n\n*****************************************Training*****************************************")
 if not os.path.isfile(work_saved_files_path + "model_" + str(epochs_number)):
 	model = RNN.lstm_RNN(X_train, y_train)
 	try:
-		model.fit(X_train, y_train, batch_size = work_batch_size, epochs=epochs_number)
+		history = model.fit(X_train, y_train, batch_size = work_batch_size, epochs=epochs_number)
 	except KeyboardInterrupt:
 		pass
 	model.save(work_saved_files_path + "model_" + str(epochs_number))
@@ -38,10 +40,18 @@ else:
 train_acc = model.evaluate(X_train, y_train, verbose=1)
 print("\nTrain Statistics: loss = " + str(train_acc[0]) + ", accuracy = " + str(train_acc[1]))
 
+plt.get_model_plots(history, work_saved_files_path)
+
+
 print("\n\n*****************************************Validating*****************************************\n")
 score, accuracy = model.evaluate(X_test, y_test, batch_size=work_batch_size, verbose=1)
 print("Automatic Generated Model Test Statistics: " + "loss:  " + str(score) + ", accuracy:  " + str(accuracy) + "\n")
 
 
-aux.get_evaluation_metrics(model, X_test, y_test, testing_path)
 
+
+plt.get_evaluation_metrics(model, X_test, y_test, testing_path, work_saved_files_path)
+
+
+
+plt.create_plots(original_audio_directory, work_saved_files_path, testing_path)
