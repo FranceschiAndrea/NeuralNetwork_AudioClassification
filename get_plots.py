@@ -127,68 +127,8 @@ def get_evaluation_metrics(model, X_test, y_test, testing_path, work_saved_files
 	for i in range(0, len(y_true)):
 	    if y_true[i] == yhat_classes[i]:
 	        acc = acc + 1
-	    cnf_mat[inv_map[yhat_classes[i]], inv_map[y_true[i]]] += 1	
-
-	class_testing_samples = []
-	for i in range(0,len(list(classes.keys()))):
-		class_testing_samples.append(y_true.count(y_true[i]))
-
-	confusion_matrix_array = []
-	for c1 in list(classes.keys()):
-		l = []
-		for c2 in list(classes.keys()):
-			l.append(cnf_mat[c1,c2]/class_testing_samples[classes[c1]])
-		confusion_matrix_array.append(l)
-
-	print(classification_report(y_true, yhat_classes, list(set(y_true))))				#this report show the precision and the recal of each class
-
-
-
-		
-	df_cm = pd.DataFrame(confusion_matrix_array, index = list(classes.keys()), columns = list(classes.keys()))
-	plt.figure(figsize = (10,10))
-	plt.title("Confusion Matrix", fontsize=21)
-	sn.set(font_scale=1)																
-	sn.heatmap(df_cm, fmt = ".2f", annot=True,annot_kws={"size": 12})						
-	tick_marks = np.arange(len(list(classes.keys())))
-	plt.xticks(tick_marks, list(classes.keys()), fontsize=8, rotation = 45)
-	plt.yticks(tick_marks, list(classes.keys()), fontsize=8, rotation = 30)
-	plt.ylabel('True label', fontsize=18)
-	plt.xlabel('Predicted label', fontsize=18)
-	plt.tight_layout()
-	plt.savefig(work_saved_files_path + "confusion_matrix", bbox_inches='tight')
-	plt.show()
-	
-	metrics = ["precision", "recall", "f1-score"]
-	metrics_val = []
-	cl_rep = classification_report(y_true, yhat_classes, list(set(y_true)), output_dict = True)
-	for k in cl_rep:
-		#print(k)
-		d = cl_rep[k]
-		l = []
-		if (k == "micro avg"):
-			break
-		for metric in d:
-			if not metric == "support":
-				l.append(d[metric])
-		metrics_val.append(l)
-
-	df_cm = pd.DataFrame(metrics_val, index = list(classes.keys()), columns = metrics)
-	#print(df_cm)
-
-	plt.figure(figsize = (6,6))
-	plt.title("Metrics", fontsize=21)
-	sn.set(font_scale=1)																
-	sn.heatmap(df_cm, fmt = ".2f", annot=True, annot_kws={"size": 12}, cmap=ListedColormap(['black']), cbar=False)						
-	x_tick_marks = np.arange(len(metrics))
-	y_tick_marks = np.arange(len(list(classes.keys())))
-	plt.xticks(x_tick_marks, metrics, fontsize=8, rotation = 0)
-	plt.yticks(y_tick_marks, list(classes.keys()), fontsize=8)
-	plt.ylabel('Classes', fontsize=14)
-	plt.xlabel('Metrics', fontsize=14)
-	plt.tight_layout()
-	plt.savefig(work_saved_files_path + "evaluation_metrics", bbox_inches='tight')
-	plt.show()
 
 	res = float(acc/len(y_true))
-	print("Manually Calculated Model Test Statistics: accuracy: " + str(res) + "\n")
+	print("Manually Calculated Model Test Statistics: accuracy: " + str(res) + "\n-------------------------------------------------")
+
+	return res
