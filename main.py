@@ -11,8 +11,8 @@ import get_plots as plt
 saved_files_directory = "saved_files"
 original_audio_directory = "5Classes"
 audio_segmentation_in_ms = 50
-epochs_number = 50
-work_batch_size = 1024
+epochs_number = 100
+work_batch_size = 5120
 work_directory = "New_5Classes_" + str(audio_segmentation_in_ms) #Togliereil New successivamente +in: --ds_aux.load_data()	--
 work_saved_files_path = saved_files_directory + "/" + work_directory + "/"
 training_path = work_directory + "/Training"

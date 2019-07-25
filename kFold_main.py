@@ -49,7 +49,7 @@ for k in range(0, k_VALUE):
 	score, accuracy = model.evaluate(X_test[k], y_test[k], batch_size=work_batch_size, verbose=1)
 	print("Automatic Generated Model Test Statistics: " + "loss:  " + str(score) + ", accuracy:  " + str(accuracy) + "\n")
 
-	res.append(plt.get_evaluation_metrics(model, X_test[k], y_test[k], testing_path + str(k), work_saved_files_path))
+	res.append(plt.get_evaluation_metrics_kFold(model, X_test[k], y_test[k], testing_path + str(k), work_saved_files_path))
 
 
 print("Final accuracy: ", sum(res)/10)
