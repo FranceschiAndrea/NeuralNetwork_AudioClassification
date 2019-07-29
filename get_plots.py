@@ -85,6 +85,31 @@ def get_mfcc(x, sr, work_saved_files_path):
 	plt.savefig(work_saved_files_path, bbox_inches='tight')
 	plt.show()
 
+def get_chromagram(x, sr, work_saved_files_path):
+	stft = np.abs(librosa.stft(x))
+	chroma = librosa.feature.chroma_stft(S=stft, sr=sr)
+
+	plt.figure(figsize=(10, 4))
+	librosa.display.specshow(chroma, y_axis='chroma', x_axis='time')
+	plt.colorbar()
+	plt.title('Chromagram')
+	plt.tight_layout()
+	plt.savefig(work_saved_files_path, bbox_inches='tight')
+	plt.show()
+
+
+def get_spectral_contrast(x, sr, work_saved_files_path):
+	stft = np.abs(librosa.stft(x))
+	contrast = librosa.feature.spectral_contrast(S=stft, sr=sr)
+
+	plt.figure()
+	librosa.display.specshow(contrast, x_axis='time')
+	plt.colorbar()
+	plt.ylabel('Frequency bands')
+	plt.title('Spectral contrast')
+	plt.tight_layout()
+	plt.savefig(work_saved_files_path, bbox_inches='tight')
+	plt.show()
 
 def create_plots(audio_path, work_saved_files_path, testing_path):
 	d = os.listdir(audio_path)[0]	
@@ -93,6 +118,8 @@ def create_plots(audio_path, work_saved_files_path, testing_path):
 	get_spectogram(x,sr,work_saved_files_path + file.split(".")[0] + "_spectogram.png")
 	get_spectral_centroid(x,sr,work_saved_files_path + file.split(".")[0] + "_spectral_centroid.png")
 	get_mfcc(x,sr,work_saved_files_path + file.split(".")[0] + "_mfcc.png")
+	get_chromagram(x,sr,work_saved_files_path + file.split(".")[0] + "_chromagram.png")
+	get_spectral_contrast(x,sr,work_saved_files_path + file.split(".")[0] + "_spectral_contrast.png")
 
 
 def get_model_plots(history, work_saved_files_path):
