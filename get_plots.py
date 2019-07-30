@@ -182,7 +182,6 @@ def get_evaluation_metrics(model, X_test, y_test, testing_path, work_saved_files
 
 	class_testing_samples = []
 	for i in range(0,len(list(classes.keys()))):
-		print(len(list(classes.keys())))
 		class_testing_samples.append(y_true.count(y_true[i]))
 
 	confusion_matrix_array = []
